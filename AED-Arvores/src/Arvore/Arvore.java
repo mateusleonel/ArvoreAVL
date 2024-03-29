@@ -36,20 +36,45 @@ public class Arvore<T extends Comparable<T>> {
         return raiz;
     }
 
+
     /******************************************************************/
-    /* Método     : search(T key)                                     */
+    /* Método     : search(No<T> root, T key)                         */
     /* Função     : Recebe uma chave para buscar na árvore e retorna  */
     /*              o nó da chave, caso encontre                      */ 
-    /* Parâmetros : T key - valor da chave para busca                 */
+    /* Parâmetros : No <T> - Nó da árvore em que será inserido        */
     /* Retorno    : No - estrutura da árvore                          */
     /******************************************************************/
     public No<T> search(T key) {
-        
-        return null;
+        raiz = this.getRaiz();
+        return search(raiz, key);
+    }
 
+    /******************************************************************/
+    /* Método     : search(No<T> root, T key)                         */
+    /* Função     : Recebe uma chave para buscar na árvore e retorna  */
+    /*              Derivação do método                               */                   
+    /*              o nó da chave, caso encontre                      */ 
+    /* Parâmetros : No <T> - Nó da árvore em que será inserido        */
+    /*              T key  - Valor para ser inserido                  */
+    /* Retorno    : No - estrutura da árvore                          */
+    /******************************************************************/
+    public No<T> search(No<T> root, T key) {
+        
+        if (isEmpty()) {
+            return null; 
+        }
+        else{
+            if (key.compareTo(root.getChave()) == 0) {
+                return root;
+            } else if (key.compareTo(root.getChave()) < 0) {
+                return search(root.getEsquerda(), key); 
+            } else {
+                return search(root.getDireita(), key); 
+            }
+        }
     } 
     
-     /******************************************************************/
+    /******************************************************************/
     /* Método     : insert(T key)                                     */
     /* Função     : Recebe uma chave para inserir na árvore, se a     */
     /*              a chave não existir, o nó é inserido, caso        */
@@ -58,8 +83,59 @@ public class Arvore<T extends Comparable<T>> {
     /* Retorno    : retorn true em caso de sucesso, false contrário   */
     /******************************************************************/
     public boolean insert(T key) {
+        raiz = this.getRaiz();
+        return insert(raiz, key);
+    }
+
+    /******************************************************************/
+    /* Método     : insert(No<T> root, key)                           */
+    /* Função     : Recebe uma chave para inserir na árvore, se a     */
+    /*              a chave não existir, o nó é inserido, caso        */
+    /*              contrário não é realizada nenhuma operação        */ 
+    /* Parâmetros : T key - valor da chave para inserção              */
+    /* Retorno    : retorn true em caso de sucesso, false contrário   */
+    /******************************************************************/
+    public boolean insert(No<T> root, T key) {
+
+        if (isEmpty()){
+            No<T> novo_no = new No<T>(key);
+            raiz = novo_no;
+            this.totalPalavras ++;
+            this.totalPalavrasDistintas ++;
+            return true;
+        }
+        else{
+            if (key.compareTo(root.getChave()) < 0){
+                if (root.getEsquerda() == null) {
+                    No<T> novo_no = new No<T>(key);
+                    root.setEsquerda(novo_no);
+                    novo_no.setPai(root);
+                    this.totalPalavras ++;
+                    this.totalPalavrasDistintas ++;
+                    return true;
+                } else {
+                    return insert(root.getEsquerda(), key);
+                }
+            }
+            else if (key.compareTo(root.getChave()) > 0){
+                
+                if (root.getDireita() == null) {
+                    No<T> novo_no = new No<T>(key);
+                    root.setDireita(novo_no);
+                    novo_no.setPai(root);
+                    this.totalPalavras ++;
+                    this.totalPalavrasDistintas ++;
+                    return true;
+                }
+                else { 
+                    return insert(root.getDireita(), key);
+                }
+            }    
+            else{
+                return false;
+            }
+        }    
         
-        return false;
 
     }
 
@@ -82,15 +158,13 @@ public class Arvore<T extends Comparable<T>> {
     
     /******************************************************************/
     /* Método     : searchInsert(No<T> root, T key)                   */
-    /*              Derivação do método                                                  */
+    /*              Derivação do método                               */
     /* Função     : Recebe uma chave para buscar e inserir na árvore, */
     /*              quando a chave não existir, será inserida da      */
     /*              arvore, quando existir o número de ocorrências    */
     /*              será atualizado.                                  */
     /* Parâmetros : No <T> - Nó da árvore em que será inserido        */
     /*              T key  - Valor para ser inserido                  */
-    /*            : height - Indica de houve atualização na altura da */
-    /*                       árvore                                   */
     /*                                                                */
     /* Retorno    : No - estrutura da árvore                          */
     /******************************************************************/
@@ -184,21 +258,21 @@ public class Arvore<T extends Comparable<T>> {
    
         if (no != null) {
           inOrder(no.getEsquerda());
-          System.out.print(no.getChave() + "("+ no.getOcorrencia() +")" + " ");
+          System.out.print(no.getChave() + " ");
           inOrder(no.getDireita());
         }
     }
       
     /******************************************************************/
-    /* Método     : preOrder(No<T> no)                                 */
-    /* Função     : Imprime os nós da árvore em pré-ordem                 */
+    /* Método     : preOrder(No<T> no)                                */
+    /* Função     : Imprime os nós da árvore em pré-ordem             */
     /* Parâmetros : no - Nó da arvore para ser impresso               */
     /* Retorno    : Não possuí                                        */
     /******************************************************************/
     public void preOrder(No<T> no) {
     
         if (no != null) {
-            System.out.print(no.getChave() + "("+ no.getOcorrencia() +")" + " ");
+            System.out.print(no.getChave() + " ");
             preOrder(no.getEsquerda());
             preOrder(no.getDireita());
         }
@@ -215,9 +289,16 @@ public class Arvore<T extends Comparable<T>> {
         if (no != null) {
           posOrder(no.getEsquerda());
           posOrder(no.getDireita());
-          System.out.print(no.getChave() + "("+ no.getOcorrencia() +")" + " ");
+          System.out.print(no.getChave() + " ");
         }
     }  
 
 
+    /* 
+    TODO - REMOCAO
+         - PREDECESSOR
+         - SUCESSOR
+         - AVL - ROTACOES
+         - AVL - FATOR DE BALANCEAMENTO
+    */    
 }

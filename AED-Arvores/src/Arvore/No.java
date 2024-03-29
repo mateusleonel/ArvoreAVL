@@ -10,13 +10,28 @@ public class No<T> {
 	private int balanceamento;
 	
 
-	/******************************************************************/
+    /******************************************************************/
     /* Método     : No()                                              */
     /* Função     : Construtor da nó                                  */
     /* Parâmetros : k - chave do nó                                   */
     /* Retorno    : Não possui                                        */
     /******************************************************************/
-   public No(T k) {
+    public No() {
+        setPai(null);
+		setEsquerda(null);
+        setDireita(null);
+		setBalanceamento(0);
+		setChave(null);
+		setOcorrencia(0);
+	}
+
+	/******************************************************************/
+    /* Método     : No(T k)                                           */
+    /* Função     : Construtor da nó                                  */
+    /* Parâmetros : k - chave do nó                                   */
+    /* Retorno    : Não possui                                        */
+    /******************************************************************/
+    public No(T k) {
         setPai(null);
 		setEsquerda(null);
         setDireita(null);
@@ -128,6 +143,7 @@ public class No<T> {
 	public No<T> getDireita() {
 		return direita;
 	}
+    
 	/******************************************************************/
     /* Método     : setDireita(No<T> direita)                         */
     /* Função     : Seta o nó da direita                              */

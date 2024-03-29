@@ -12,6 +12,71 @@ public class ArvoreAVL<T extends Comparable<T>> extends Arvore<T> {
     //private int totalRotacoesRL ;
 
     /******************************************************************/
+    /* Método     : insert(T key)                                     */
+    /* Função     : Recebe uma chave para inserir na árvore, se a     */
+    /*              a chave não existir, o nó é inserido, caso        */
+    /*              contrário não é realizada nenhuma operação        */ 
+    /* Parâmetros : T key - valor da chave para inserção              */
+    /* Retorno    : retorn true em caso de sucesso, false contrário   */
+    /******************************************************************/
+    public boolean insert(T key) {
+        raiz = this.getRaiz();
+        boolean height = false;
+        return insert(raiz, key, height);
+    }
+
+    /******************************************************************/
+    /* Método     : insert(No<T> root, key, boolean height)                           */
+    /* Função     : Recebe uma chave para inserir na árvore, se a     */
+    /*              a chave não existir, o nó é inserido, caso        */
+    /*              contrário não é realizada nenhuma operação        */ 
+    /* Parâmetros : T key - valor da chave para inserção              */
+    /* Retorno    : retorn true em caso de sucesso, false contrário   */
+    /******************************************************************/
+    public boolean insert(No<T> root, T key, boolean height) {
+
+        if (isEmpty()){
+            No<T> novo_no = new No<T>(key);
+            raiz = novo_no;
+            this.totalPalavras ++;
+            this.totalPalavrasDistintas ++;
+            return true;
+        }
+        else{
+            if (key.compareTo(root.getChave()) < 0){
+                if (root.getEsquerda() == null) {
+                    No<T> novo_no = new No<T>(key);
+                    root.setEsquerda(novo_no);
+                    novo_no.setPai(root);
+                    this.totalPalavras ++;
+                    this.totalPalavrasDistintas ++;
+                    return true;
+                } else {
+                    return insert(root.getEsquerda(), key);
+                }
+            }
+            else if (key.compareTo(root.getChave()) > 0){
+                
+                if (root.getDireita() == null) {
+                    No<T> novo_no = new No<T>(key);
+                    root.setDireita(novo_no);
+                    novo_no.setPai(root);
+                    this.totalPalavras ++;
+                    this.totalPalavrasDistintas ++;
+                    return true;
+                }
+                else { 
+                    return insert(root.getDireita(), key);
+                }
+            }    
+            else{
+                return false;
+            }
+        }    
+   
+    }
+
+    /******************************************************************/
     /* Método     : searchInsert(T key)                               */
     /* Função     : Recebe uma chave para buscar e inserir na árvore, */
     /*              quando a chave não existir, será inserida da      */
@@ -29,7 +94,7 @@ public class ArvoreAVL<T extends Comparable<T>> extends Arvore<T> {
     
     
     /******************************************************************/
-    /* Método     : searchInsert(No<T> root, T key)                   */
+    /* Método     : searchInsert(No<T> root, T key, boolean height)                   */
     /*              Derivação do método                                                  */
     /* Função     : Recebe uma chave para buscar e inserir na árvore, */
     /*              quando a chave não existir, será inserida da      */
@@ -45,13 +110,11 @@ public class ArvoreAVL<T extends Comparable<T>> extends Arvore<T> {
     public void searchInsert(No<T> root, T key, boolean height){
        
         if (isEmpty()){
-            System.out.println("Height : " + height);
             No<T> novo_no = new No<T>(key);
             raiz = novo_no;
             this.totalPalavrasDistintas ++;
             raiz.addOcorrencia();
             height = true ; 
-            System.out.println("Height : " + height);
         }
 
         else{
