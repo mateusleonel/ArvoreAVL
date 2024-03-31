@@ -114,6 +114,7 @@ public class ArvoreAVL<T extends Comparable<T>> extends Arvore<T> {
             raiz = novo_no;
             this.totalPalavrasDistintas ++;
             raiz.addOcorrencia();
+            raiz.setBalanceamento(0);
             height = true ; 
         }
 
@@ -124,6 +125,7 @@ public class ArvoreAVL<T extends Comparable<T>> extends Arvore<T> {
                     root.setEsquerda(novo_no);
                     novo_no.setPai(root);
                     novo_no.addOcorrencia();
+                    novo_no.setBalanceamento(0);
                     this.totalPalavrasDistintas ++;
                 } else {
                     searchInsert(root.getEsquerda(), key);
@@ -136,6 +138,7 @@ public class ArvoreAVL<T extends Comparable<T>> extends Arvore<T> {
                     root.setDireita(novo_no);
                     novo_no.setPai(root);
                     novo_no.addOcorrencia();
+                    novo_no.setBalanceamento(0);
                     this.totalPalavrasDistintas ++;
                 }
                 else { 
