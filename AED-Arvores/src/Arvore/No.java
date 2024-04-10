@@ -84,6 +84,27 @@ public class No<T> {
 
 
     /******************************************************************/
+    /* Método     : addBalanceamento()                                */
+    /* Função     : Aumenta o fator de balanceamento do nó em 1       */
+    /* Parâmetros : Não possui                                        */
+    /* Retorno    : Não possui                                        */
+    /******************************************************************/
+	public void addBalanceamento() {
+		this.balanceamento ++;
+	}
+
+    /******************************************************************/
+    /* Método     : subBalanceamento()                                */
+    /* Função     : Diminuí o fator de balanceamento do nó em 1       */
+    /* Parâmetros : Não possui                                        */
+    /* Retorno    : Não possui                                        */
+    /******************************************************************/
+	public void subBalanceamento() {
+		this.balanceamento --;
+	}
+
+
+    /******************************************************************/
     /* Método     : getOcorrencia()                                   */
     /* Função     : Recupera o número de ocorrências do nó            */
     /* Parâmetros : Não possui                                        */

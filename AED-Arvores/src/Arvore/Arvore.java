@@ -5,6 +5,7 @@ public class Arvore<T extends Comparable<T>> {
     private No<T> raiz;
     private int totalPalavras;
     private int totalPalavrasDistintas;
+    private int totalComparacoes;
     
     /******************************************************************/
     /* Método     : Arvore()                                          */
@@ -24,6 +25,16 @@ public class Arvore<T extends Comparable<T>> {
     /******************************************************************/
     public boolean isEmpty() {
         return raiz == null;
+    }
+
+    /******************************************************************/
+    /* Método     : setRaiz()                                         */
+    /* Função     : Seta o nó raiz da árvore                          */
+    /* Parâmetros : No - estrutura da árvore                          */               
+    /* Retorno    : Não possui                                        */
+    /******************************************************************/
+    public void setRaiz(No<T> raiz) {
+        this.raiz = raiz;
     }
 
     /******************************************************************/
@@ -84,7 +95,12 @@ public class Arvore<T extends Comparable<T>> {
     /******************************************************************/
     public boolean insert(T key) {
         raiz = this.getRaiz();
-        return insert(raiz, key);
+        if (insert(raiz, key) == null){
+            return false;
+        }
+        else{
+            return true;
+        }
     }
 
     /******************************************************************/
@@ -93,51 +109,56 @@ public class Arvore<T extends Comparable<T>> {
     /*              a chave não existir, o nó é inserido, caso        */
     /*              contrário não é realizada nenhuma operação        */ 
     /* Parâmetros : T key - valor da chave para inserção              */
-    /* Retorno    : retorn true em caso de sucesso, false contrário   */
+    /* Retorno    : retorna T key                                     */
     /******************************************************************/
-    public boolean insert(No<T> root, T key) {
-
+    public No<T> insert(No<T> root, T key) {
+        
         if (isEmpty()){
             No<T> novo_no = new No<T>(key);
             raiz = novo_no;
-            this.totalPalavras ++;
             this.totalPalavrasDistintas ++;
-            return true;
+            raiz.addOcorrencia();
+            return novo_no;
         }
+
         else{
+
             if (key.compareTo(root.getChave()) < 0){
+                
+                totalComparacoes ++ ;
+                
                 if (root.getEsquerda() == null) {
                     No<T> novo_no = new No<T>(key);
                     root.setEsquerda(novo_no);
-                    novo_no.setPai(root);
-                    this.totalPalavras ++;
+                    novo_no.addOcorrencia();
                     this.totalPalavrasDistintas ++;
-                    return true;
+                    return novo_no;
                 } else {
-                    return insert(root.getEsquerda(), key);
+                    searchInsert(root.getEsquerda(), key);
                 }
             }
             else if (key.compareTo(root.getChave()) > 0){
                 
+                totalComparacoes = totalComparacoes + 2;
+                
                 if (root.getDireita() == null) {
                     No<T> novo_no = new No<T>(key);
                     root.setDireita(novo_no);
-                    novo_no.setPai(root);
-                    this.totalPalavras ++;
+                    novo_no.addOcorrencia();
                     this.totalPalavrasDistintas ++;
-                    return true;
+                    return novo_no;
                 }
                 else { 
-                    return insert(root.getDireita(), key);
+                    searchInsert(root.getDireita(), key);
                 }
             }    
-            else{
-                return false;
-            }
-        }    
-        
+            
+            return root;
 
+        }
+        
     }
+    
 
     /******************************************************************/
     /* Método     : remove(T key)                                     */
@@ -149,7 +170,12 @@ public class Arvore<T extends Comparable<T>> {
     /******************************************************************/
     public boolean remove(T key) {
         raiz = this.getRaiz();
-        return remove(raiz, key);
+        if (remove(raiz, key) == null){
+            return false;
+        }
+        else{
+            return true;
+        }
     }
 
     /******************************************************************/
@@ -160,69 +186,49 @@ public class Arvore<T extends Comparable<T>> {
     /* Parâmetros : T key - valor da chave para remoção              */
     /* Retorno    : retorn true em caso de sucesso, false contrário   */
     /******************************************************************/
-    public boolean remove(No<T> root, T key)  {
+    public No<T> remove(No<T> root, T key)  {
         
-        if (isEmpty()){
-            return false;
-        } else {
-         
-            No<T> noPai = root.getPai();
-            No<T> noSucessor    = sucessor(root);
-          
-            if (key.compareTo(root.getChave()) == 0) {
-                    
-                if (root.getDireita() == null && root.getEsquerda() == null){
-                    if (root.getPai() == null) {
-                        raiz = null; 
-                    } else if (root.getPai().getEsquerda() == root) {
-                        root.getPai().setEsquerda(null);
-                    } else {
-                        root.getPai().setDireita(null);
-                    }
-                }
-
-                else if (root.getEsquerda() != null && root.getDireita() != null) {
-
-                    if (noPai.getEsquerda() == root){
-                       noPai.setEsquerda(noSucessor);
-                    }
-                    else{
-                       noPai.setDireita(noSucessor);
-                    }
-
-                    root.getDireita().setEsquerda(noSucessor.getDireita());
-                    noSucessor.setEsquerda(root.getEsquerda());
-                    noSucessor.setDireita(root.getDireita());
-                }
-                else{
-                     if (noPai.getEsquerda() == root){
-                        if(root.getEsquerda() != null){
-                            noPai.setEsquerda(root.getEsquerda()); 
-                        }
-                        else{
-                            noPai.setEsquerda(root.getDireita());  
-                        }  
-                     }
-                     else{
-                        if(root.getEsquerda() != null){
-                            noPai.setDireita(root.getEsquerda());
-                        }
-                        else{
-                            noPai.setDireita(root.getDireita());
-                        }     
-                     }  
-                }    
-                
-                return true;
-    
-            } else if (key.compareTo(root.getChave()) < 0) {
-                return remove(root.getEsquerda(), key); 
-            } else {
-                return remove(root.getDireita(), key); 
+            No<T> tempNo = new No<T>();
+                 
+            if (key.compareTo(root.getChave()) < 0) {
+                root.setEsquerda(remove(root.getEsquerda(), key));
             }
-        }
+            else if (key.compareTo(root.getChave()) > 0) {
+                root.setDireita(remove(root.getDireita(), key));
+            }
+            else{
+
+                if (root.getEsquerda() == null || root.getDireita() == null) {
+                    
+                    tempNo = null;
+                    
+                    if (root.getEsquerda() == null) {
+                        tempNo = root.getDireita();
+                    } else {
+                        tempNo = root.getEsquerda();
+                    }
+                    
+                    if (tempNo == null) {
+                        tempNo = root;
+                        root = null;
+                    } else {
+                        root = tempNo; 
+                    }
+
+                } else {
+                    
+                    tempNo = sucessor(root);
+                
+                    root.setChave(tempNo.getChave());
+                    
+                    root.setDireita(remove(root.getDireita(), tempNo.getChave()));
+                }
+
+            }
+
+            return root;
+        
     }
-    
     /******************************************************************/
     /* Método     : searchInsert(T key)                               */
     /* Função     : Recebe uma chave para buscar e inserir na árvore, */
@@ -232,55 +238,71 @@ public class Arvore<T extends Comparable<T>> {
     /* Parâmetros : T key - valor da chave para inserção              */
     /* Retorno    : No - estrutura da árvore                          */
     /******************************************************************/
-    public void searchInsert(T key) {
+    public boolean searchInsert(T key) {
+    
         this.totalPalavras ++;
-        raiz = this.getRaiz();
-        searchInsert(raiz, key);
+        No<T> root = getRaiz();
+        
+        if (searchInsert(root, key) != null){
+            return false;
+        }
+        else{
+            return true;
+        }    
+
+
     } 
     
     
     /******************************************************************/
-    /* Método     : searchInsert(No<T> root, T key)                   */
-    /*              Derivação do método                               */
+    /* Método     : searchInsert(No<T> root, T key, boolean height)  */
+    /*              Derivação do método                              */
     /* Função     : Recebe uma chave para buscar e inserir na árvore, */
     /*              quando a chave não existir, será inserida da      */
     /*              arvore, quando existir o número de ocorrências    */
     /*              será atualizado.                                  */
     /* Parâmetros : No <T> - Nó da árvore em que será inserido        */
     /*              T key  - Valor para ser inserido                  */
-    /*                                                                */
+    /*            : height - Indica de houve atualização na altura da */
+    /*                       árvore                                   */
     /* Retorno    : No - estrutura da árvore                          */
     /******************************************************************/
-    public void searchInsert(No<T> root, T key){
-       
+    public No<T> searchInsert(No<T> root, T key) {
+          
         if (isEmpty()){
             No<T> novo_no = new No<T>(key);
             raiz = novo_no;
             this.totalPalavrasDistintas ++;
             raiz.addOcorrencia();
+            return novo_no;
         }
 
         else{
 
             if (key.compareTo(root.getChave()) < 0){
+                
+                totalComparacoes ++ ;
+                
                 if (root.getEsquerda() == null) {
                     No<T> novo_no = new No<T>(key);
                     root.setEsquerda(novo_no);
-                    novo_no.setPai(root);
                     novo_no.addOcorrencia();
                     this.totalPalavrasDistintas ++;
+                    return novo_no;
                 } else {
                     searchInsert(root.getEsquerda(), key);
                 }
             }
             else if (key.compareTo(root.getChave()) > 0){
                 
+                totalComparacoes = totalComparacoes + 2;
+                
                 if (root.getDireita() == null) {
                     No<T> novo_no = new No<T>(key);
                     root.setDireita(novo_no);
-                    novo_no.setPai(root);
                     novo_no.addOcorrencia();
                     this.totalPalavrasDistintas ++;
+                    return novo_no;
                 }
                 else { 
                     searchInsert(root.getDireita(), key);
@@ -288,9 +310,13 @@ public class Arvore<T extends Comparable<T>> {
             }    
             else{
                 root.addOcorrencia();
+                return root;
             }
 
+            return root;
+
         }
+        
     }
 
     /******************************************************************/
@@ -300,16 +326,16 @@ public class Arvore<T extends Comparable<T>> {
     /* Retorno    : int altura da árvore                              */
     /******************************************************************/
     public int getAltura(No<T> no) {
-        if(no == null || (no.getEsquerda() == null && no.getDireita() == null))
-          return 1;
-        else {
-          if (getAltura(no.getEsquerda()) > getAltura(no.getDireita()))
-             return ( 1 + getAltura(no.getEsquerda()) );
-          else
-          return ( 1 + getAltura(no.getDireita()) );
+        if (no == null) {
+            return -1; 
+        } else {
+            int alturaEsquerda = getAltura(no.getEsquerda());
+            int alturaDireita = getAltura(no.getDireita());
+            
+            // A altura de um nó é o máximo entre as alturas das subárvores esquerda e direita, mais 1 para contar o próprio nó
+            return Math.max(alturaEsquerda, alturaDireita) + 1;
         }
     }
-
     /******************************************************************/
     /* Método     : getPalavras()                                     */
     /* Função     : Retorna o número de palavras em um nó da árvore   */
@@ -330,6 +356,18 @@ public class Arvore<T extends Comparable<T>> {
     public int getPalavrasDistintas() {
         return totalPalavrasDistintas;
     }
+
+      /******************************************************************/
+    /* Método     : getComparaces()                                   */
+    /* Função     : Retorna o número de rotação de comparacoes entre  */
+    /*              chaves                                            */
+    /* Parâmetros : Não possui                                        */
+    /* Retorno    : int totalComparacoes                              */
+    /******************************************************************/
+    public int getComparaces(){
+        return totalComparacoes;
+    }
+
 
 
     /******************************************************************/
@@ -504,12 +542,17 @@ public class Arvore<T extends Comparable<T>> {
         }
     }  
 
-
-    /* 
-    TODO - REMOCAO
-         - PREDECESSOR
-         - SUCESSOR
-         - AVL - ROTACOES
-         - AVL - FATOR DE BALANCEAMENTO
-    */    
+    public void printTree(No<T> root, String prefix, boolean isLeft) {
+        if (root != null) {
+            if (root.getDireita() != null) {
+                printTree(root.getDireita(), prefix + (isLeft ? "│   " : "    "), false);
+            }
+            System.out.println(prefix + (isLeft ? "└── " : "┌── ") +  " [Chave : " + root.getChave() + " - Freq : " + root.getOcorrencia() + " - Balanc : " + root.getBalanceamento() + "]" );
+            if (root.getEsquerda() != null) {
+                printTree(root.getEsquerda(), prefix + (isLeft ? "    " : "│   "), true);
+            }
+        }
+    }
+    
+   
 }
